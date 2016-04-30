@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>TVI-ENLINEA</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.min.css" />
+		<link rel="stylesheet" href="vendor/waves/waves.min.css" />
+		<link rel="stylesheet" href="vendor/wow/animate.css" />
+		<link rel="stylesheet" href="css/nativedroid2.css" />
+        <link rel="stylesheet" href="css/jquery.SplashScreen.css"/>
+        
+
+		<meta name="mobile-web-app-capable" content="yes">
+	 	<meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        
+	</head>
+	<body>
+        <div id="splashscreen">
+        <div id="progress"></div>
+        <div id="status"></div>
+        </div>
+
+		<div id="page" data-role="page">
+
+			<nd2-include data-src="examples/fragments/panel.left.html"></nd2-include>
+
+			<div data-role="panel" id="bottomsheet" data-animate="false" data-position='bottom' data-display="overlay">
+				<nd2-include data-src="examples/fragments/bottom.sheet.html"></nd2-include>
+			</div>
+
+			<div data-role="header" data-position="fixed" class="wow fadeInDown" data-wow-delay="0.2s">
+				
+				<a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
+				<h1 class="wow fadeIn" data-wow-delay='0.4s'><img WIDTH=100 HEIGHT=90 src="img/tevienlinealogo.png"></h1>
+			</div>
+
+			<div role="main" class="ui-content" data-inset="true">
+				<div class="col-xs-12 col-sm-6 col-md-4">
+                    
+						<div class="box">
+                        <form id="form1" name="buscar" method="POST" action="">
+                        <label for="select-choice-1b" class="select">Estado:</label>
+                        <select name="estado" id="Estado" data-native-menu="true">
+                            <option>Seleccione un Estado..</option>
+                        </select>
+                        <label for="select-choice-1b" class="select">Municipio:</label>
+                        <select name="municipio" id="Municipio" data-native-menu="true">
+                                <option>Seleccione un Municipio..</option>
+                        </select>
+                       
+                        <label for="name2b">Que busca?</label>
+                        <input type="text" name="name2" id="name2" value="" data-clear-btn="true" placeholder="Plomero, Electricista ">
+                        <!--<input type="button" id="Buscar"  name="buscar" value="Buscar" class="ui-btn ui-btn-raised clr-primary"> -->
+                        <a href="#" id="Buscar" name="buscar" value="Buscar" class="ui-btn ui-btn-raised clr-primary">Aceptar</a>   
+                        </form>
+                        </div>
+
+                </div>
+                
+			</div>
+          
+              <div role="main" id="listview" class="ui-content wow fadeIn" data-inset="false" data-wow-delay="0.2s">
+                  <ul id="ul" data-role='listview' data-icon='false'>
+                  </ul>
+              </div>
+
+		</div>
+        
+		<!--<script src="js/jquery.min.js"></script>-->
+        <script src="js/jquery-1.12.3.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script src="js/jquery.mobile.min.js"></script>
+		<script src="vendor/waves/waves.min.js"></script>
+		<script src="vendor/wow/wow.min.js"></script>
+		<script src="js/nativedroid2.js"></script>
+		<script src="nd2settings.js"></script>
+        <script src="js/jquery.SplashScreen.js"></script>
+        
+        
+        <script>
+            
+            $(document).ready(function() {
+                 
+            $.SplashScreen({
+                progressCount: true,
+                progressBar: true
+            });
+        
+            $.ajax({
+            type:"POST",
+            url: "http://201.155.190.128/php/procesar_estados.php",
+            data: { estados : "Mexico" } 
+            }).done(function(data){
+                console.log(data);
+                var obj2 = JSON.parse(data);
+                console.log(obj2);
+           for(f=0;f<obj2.Mexico.length;f++){  
+                
+            $("#Estado").append("<option value="+obj2.Mexico[f]+">"+obj2.Mexico[f]+"</option>");
+                
+           }
+                
+                //$("Estado").html(data);
+                //$("#Estado").select().select("refresh");
+                /*("#Estado").append(data);
+                $("#listview").listview().listview("refresh");*/
+            });
+            // Obtener municipios
+           $("#Estado").change(function(){
+            var estado = $("#Estado option:selected").val();
+            console.log(estado);
+            $.ajax({
+            type:"POST",
+            url: "http://201.155.190.128/php/procesar_estados.php",
+            data: { municipios : estado } 
+            }).done(function(data){
+                //var obj3 = JSON.parse(data);
+                //console.log(obj3);
+                //console.log(obj3);
+                console.log(data);
+            /*for(i=0; i<obj3.lenght; i++){    
+            $("#Municipio").append("<option value="+obj3+">"+obj3+"</option>");
+            }*/
+                $("#Municipio").html(data);
+            });
+            });
+                     
+            });
+        </script>
+        
+        <script type="text/javascript">
+        
+           $("#Buscar").click(function(){
+            var estado = document.getElementById("Estado").value;
+        	var municipio = document.getElementById("Municipio").value;
+        	var Buscar = document.getElementById("name2").value;
+          	if(Buscar.length != 0){
+        	console.log(Buscar);
+        	$.ajax({
+            type: "POST",
+            url: "http://201.155.190.128/php/json.php",
+            data: { estado:estado,
+                    municipio:municipio,
+                    buscar:Buscar}
+            }).done(function(data){
+            	console.log(data);
+                var obj = JSON.parse(data);
+                console.log(obj);
+                //var nom = obj.data[0].nom_empresa;
+               if(obj.length != 0 ){
+                clearBox();
+               for(f=0;f<obj.length;f++){
+              	var no = f+1;
+
+            	$("#listview").append("<li data-role='list-divider'>Opcion "+no+"</li><li><a href='Tarjeta.html?nom_empresa="+obj[f].nom_empresa+"&correo="+obj[f].correo+"&eslogan="+obj[f].eslogan+"&tel="+obj[f].tel+"&cel="+obj[f].cel+"&dom="+obj[f].dom+"' target='_blank'><img src='"+obj[f].foto+"' class='ui-thumbnail ui-thumbnail-circular' /><h2>"+obj[f].nom_empresa+"</h2><p>"+obj[f].correo+"</p></a></li>");
+               
+              }
+
+                $("#listview").listview().listview("refresh");
+                     document.getElementById("form1").reset();
+                    //document.form1.Buscar.value = "";
+                
+                } else{
+
+                	alert("No se encontro Resultados");
+                	$("#listview").html("");
+                	$("#listview").listview().listview("refresh");
+                    document.getElementById("form1").reset();
+                    
+                }
+              });
+            
+		 
+			
+            }else{
+                
+                     alert("Rellene todos los campos");          
+                               
+            }
+                });
+            
+               function clearBox(){
+               document.getElementById("listview").innerHTML = "";
+              }
+
+              
+      </script>
+
+	</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>TVI-ENLINEA</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.min.css" />
+		<link rel="stylesheet" href="vendor/waves/waves.min.css" />
+		<link rel="stylesheet" href="vendor/wow/animate.css" />
+		<link rel="stylesheet" href="css/nativedroid2.css" />
+
+		<meta name="mobile-web-app-capable" content="yes">
+	 	<meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+	</head>
+	<body>
+
+		<div data-role="page">
+
+			<nd2-include data-src="examples/fragments/panel.left.html"></nd2-include>
+
+			<div data-role="panel" id="bottomsheet" data-animate="false" data-position='bottom' data-display="overlay">
+				<nd2-include data-src="examples/fragments/bottom.sheet.html"></nd2-include>
+			</div>
+
+			<div data-role="header" data-position="fixed" class="wow fadeInDown" data-wow-delay="0.2s">
+				
+				<a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
+				<h1 class="wow fadeIn" data-wow-delay='0.4s'><img  src="img/tevienlinealogo.png" height="90px" width="100px"></h1>
+			</div>
+
+			<div role="main" class="ui-content" data-inset="false">
+				<div class="box">
+				<form name="contacto" method="POST" >
+				<label for="name2b">Nombre:</label>
+                <input type="text" name="name2" id="name2b" value="" data-clear-btn="true" placeholder="Jhonn Doe">
+                <label for="name2b">Tel o Cel:</label>
+                <input type="text" name="name2" id="cel" value="" data-clear-btn="true" placeholder="(662)612158">
+                <label for="inputEmail">Correo:</label>
+                <input type="email" name="inputEmail" id="mail" value="" data-clear-btn="true" placeholder="ejemplo@tvienlinea.com">
+                <label for="textarea2b">Motivo:</label>
+	            <textarea cols="40" rows="50" name="textarea2" id="motivo" placeholder="Escriba aqui.."></textarea>
+	            <a href="#" id="aceptar" class="ui-btn ui-btn-raised clr-primary">Aceptar</a>
+                </form>
+				</div>
+			</div>
+			
+			
+
+		</div>
+
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script src="js/jquery.mobile.min.js"></script>
+		<script src="vendor/waves/waves.min.js"></script>
+		<script src="vendor/wow/wow.min.js"></script>
+		<script src="js/nativedroid2.js"></script>
+		<script src="nd2settings.js"></script>
+		
+			<script type="text/javascript">
+			
+			function getGET(){
+            var loc = document.location.href;
+            var getString = loc.split('?')[1];
+            var GET = getString.split('&');
+            var get = {};//this object will be filled with the key-value pairs and returned.
+
+            for(var i = 0, l = GET.length; i < l; i++){
+            var tmp = GET[i].split('=');
+            get[tmp[0]] = unescape(decodeURI(tmp[1]));
+            }
+            return get;
+            } 
+
+
+            $("#aceptar").click(function(){
+                var get = getGET();
+                console.log(get);
+                var destino = get.correo;
+                var nombre = document.getElementById("name2b").value;
+                var cel = document.getElementById("cel").value;
+                var correo = document.getElementById("mail").value;
+                var motivo = document.getElementById("motivo").value;
+          	    if(destino.length != 0){
+        	    console.log(destino);
+        	    $.ajax({
+                type: "POST",
+                url: "http://tvienlinea.com/php/enviar.php",
+                data: { destino:destino,
+                        nombre:nombre,
+                        telefono:cel,
+                    	correo:correo,
+                    	mensaje:motivo
+                      }
+                    }).done(function(data){
+                    	console.log(data);
+                    	if(data == "Seenvio"){
+                    	alert("Se Envio correo");
+						document.getElementById("contacto").reset();
+					}else{
+
+						alert("Mensaje no se envio ");
+
+					}
+                    });
+                }else{
+
+                	alert("Rellene todos los campos ");
+                }
+                });
+		</script>
+	</body>
+</html>
